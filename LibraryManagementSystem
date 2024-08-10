@@ -1,0 +1,337 @@
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+public class LibraryManagementSystem extends JFrame {
+
+    private DefaultListModel<String> availableBooksModel;
+    private DefaultListModel<String> checkedOutBooksModel;
+    private DefaultListModel<User> activeUsersModel;
+    private DefaultListModel<User> inactiveUsersModel;
+    private User currentUser;  
+    private ArrayList<User> users; 
+
+    public LibraryManagementSystem() {
+        users = new ArrayList<>();
+        users.add(new User("Vallveti, Varun", "VallvetiVarun", "123456", true));
+        users.add(new User("Halani, Hetal", "halanihetal", "123456", false));
+        users.add(new User("Jain, Abhi", "JaneAbhi", "123456", true));
+
+        
+        setTitle("Halani Hetal Library Login Page");
+        setSize(500, 400);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        showWelcomePage();
+    }
+
+    private void showWelcomePage() {
+        getContentPane().removeAll();
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.PINK); 
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        JLabel welcomeLabel = new JLabel("Welcome!!!");
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        c.gridx = 0;
+        c.gridy = 0;
+        panel.add(welcomeLabel, c);
+
+        JButton loginButton = new JButton("Login");
+        loginButton.setForeground(Color.BLACK);
+        loginButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showLoginPage();
+            }
+        });
+        c.gridy = 1;
+        panel.add(loginButton, c);
+
+        JButton adminButton = new JButton("Admin");
+        adminButton.setForeground(Color.BLACK);
+        adminButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showAdminPage();
+            }
+        });
+        c.gridy = 2;
+        panel.add(adminButton, c);
+
+        JButton exitButton = new JButton("Exit!!!");
+        exitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+        c.gridy = 3;
+        panel.add(exitButton, c);
+
+        JLabel signUpLabel = new JLabel("Not a user? Click here to sign up:");
+        c.gridy = 4;
+        panel.add(signUpLabel, c);
+
+        JButton signUpButton = new JButton("Signup");
+        signUpButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showSignUpPage();
+            }
+        });
+        c.gridy = 5;
+        panel.add(signUpButton, c);
+
+        add(panel);
+        revalidate();
+        repaint();
+    }
+
+    private void showLoginPage() {
+        getContentPane().removeAll();
+        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+        panel.setBackground(Color.PINK); 
+
+        JLabel nameLabel = new JLabel("Full Name:");
+        JTextField nameText = new JTextField(20);
+        JLabel cardLabel = new JLabel("Username:");
+        JTextField cardText = new JTextField(20);
+        JLabel passwordLabel = new JLabel("Password:");
+        JPasswordField passwordText = new JPasswordField(20);
+
+        JButton loginButton = new JButton("Login");
+        loginButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+               
+                currentUser = new User(nameText.getText(), cardText.getText(), new String(passwordText.getPassword()), true);
+                showUserPage();
+            }
+        });
+
+        panel.add(nameLabel);
+        panel.add(nameText);
+        panel.add(cardLabel);
+        panel.add(cardText);
+        panel.add(passwordLabel);
+        panel.add(passwordText);
+        panel.add(new JLabel("")); 
+        panel.add(loginButton);
+
+        add(panel);
+        setTitle("USER LOGIN");
+        setSize(400, 200);
+        revalidate();
+        repaint();
+    }
+
+    private void showUserPage() {
+        getContentPane().removeAll();
+        setTitle("USER PAGE");
+        setSize(700, 400);
+
+        
+        availableBooksModel = new DefaultListModel<>();
+        checkedOutBooksModel = new DefaultListModel<>();
+
+        
+        availableBooksModel.addElement("The Very Hungry Caterpillar");
+        availableBooksModel.addElement("The Great Gatsby");
+        availableBooksModel.addElement("Goodnight Moon");
+        availableBooksModel.addElement("To Kill a Mockingbird");
+        availableBooksModel.addElement("Animal Farm");
+
+      
+        JList<String> availableBooksList = new JList<>(availableBooksModel);
+        JList<String> checkedOutBooksList = new JList<>(checkedOutBooksModel);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.PINK); 
+
+        JPanel listsPanel = new JPanel(new GridLayout(1, 2));
+        listsPanel.setBackground(Color.PINK); 
+
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.setBackground(Color.PINK); 
+
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.setBackground(Color.PINK); 
+
+        JLabel checkedOutLabel = new JLabel("Checked out books:");
+        JLabel booksLabel = new JLabel("Books in Library:");
+
+        JButton checkOutButton = new JButton("Check out");
+        checkOutButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedBook = availableBooksList.getSelectedValue();
+                if (selectedBook != null) {
+                    availableBooksModel.removeElement(selectedBook);
+                    checkedOutBooksModel.addElement(selectedBook);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select a book to check out.");
+                }
+            }
+        });
+
+        JButton checkInButton = new JButton("Check in");
+        checkInButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedBook = checkedOutBooksList.getSelectedValue();
+                if (selectedBook != null) {
+                    checkedOutBooksModel.removeElement(selectedBook);
+                    availableBooksModel.addElement(selectedBook);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select a book to check in.");
+                }
+            }
+        });
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setBackground(Color.PINK);
+        buttonsPanel.add(checkInButton);
+        buttonsPanel.add(checkOutButton);
+
+        leftPanel.add(checkedOutLabel, BorderLayout.NORTH);
+        leftPanel.add(new JScrollPane(checkedOutBooksList), BorderLayout.CENTER);
+        leftPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+        rightPanel.add(booksLabel, BorderLayout.NORTH);
+        rightPanel.add(new JScrollPane(availableBooksList), BorderLayout.CENTER);
+
+        listsPanel.add(leftPanel);
+        listsPanel.add(rightPanel);
+
+        JButton profileButton = new JButton("Profile");
+        profileButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showProfilePage();
+            }
+        });
+
+        panel.add(listsPanel, BorderLayout.CENTER);
+        panel.add(profileButton, BorderLayout.NORTH);
+
+        add(panel);
+        revalidate();
+        repaint();
+    }
+
+    private void showAdminPage() {
+        getContentPane().removeAll();
+        setTitle("ADMIN USER PAGE");
+        setSize(700, 400);
+
+        activeUsersModel = new DefaultListModel<>();
+        inactiveUsersModel = new DefaultListModel<>();
+
+        for (User user : users) {
+            if (user.isActive()) {
+                activeUsersModel.addElement(user);
+            } else {
+                inactiveUsersModel.addElement(user);
+            }
+        }
+
+        JList<User> activeUsersList = new JList<>(activeUsersModel);
+        JList<User> inactiveUsersList = new JList<>(inactiveUsersModel);
+
+        JPanel panel = new JPanel(new GridLayout(1, 2));
+        panel.setBackground(Color.PINK); 
+
+        JPanel activePanel = new JPanel(new BorderLayout());
+        activePanel.setBackground(Color.PINK);
+        JPanel inactivePanel = new JPanel(new BorderLayout());
+        inactivePanel.setBackground(Color.PINK); 
+
+        JLabel activeUsersLabel = new JLabel("Active Users:");
+        JLabel inactiveUsersLabel = new JLabel("Inactive Users:");
+
+        JButton deleteButton = new JButton("Delete User");
+        deleteButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                User selectedUser = activeUsersList.getSelectedValue();
+                if (selectedUser == null) {
+                    selectedUser = inactiveUsersList.getSelectedValue();
+                }
+                if (selectedUser != null) {
+                    users.remove(selectedUser);
+                    refreshAdminPage();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select a user to delete.");
+                }
+            }
+        });
+
+        activePanel.add(activeUsersLabel, BorderLayout.NORTH);
+        activePanel.add(new JScrollPane(activeUsersList), BorderLayout.CENTER);
+
+        inactivePanel.add(inactiveUsersLabel, BorderLayout.NORTH);
+        inactivePanel.add(new JScrollPane(inactiveUsersList), BorderLayout.CENTER);
+
+        panel.add(activePanel);
+        panel.add(inactivePanel);
+
+        add(panel, BorderLayout.CENTER);
+        add(deleteButton, BorderLayout.SOUTH);
+
+        revalidate();
+        repaint();
+    }
+
+    private void refreshAdminPage() {
+        showAdminPage();
+    }
+
+    private void showProfilePage() {
+        JOptionPane.showMessageDialog(this, "Full Name: " + currentUser.getFullName()
+                        + "\nUsername: " + currentUser.getUsername()
+                        + "\nPassword: " + currentUser.getPassword(),
+                "User Profile", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void showSignUpPage() {
+        getContentPane().removeAll();
+        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+        panel.setBackground(Color.PINK); 
+
+        JLabel nameLabel = new JLabel("Name:");
+        JTextField nameText = new JTextField(20);
+        JLabel userLabel = new JLabel("Username:");
+        JTextField userText = new JTextField(20);
+        JLabel passwordLabel = new JLabel("Password:");
+        JPasswordField passwordText = new JPasswordField(20);
+
+        JButton signUpButton = new JButton("Sign Up");
+        signUpButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                
+                currentUser = new User(nameText.getText(), userText.getText(), new String(passwordText.getPassword()), true);
+                users.add(currentUser);
+                showWelcomePage();
+            }
+        });
+
+        panel.add(nameLabel);
+        panel.add(nameText);
+        panel.add(userLabel);
+        panel.add(userText);
+        panel.add(passwordLabel);
+        panel.add(passwordText);
+        panel.add(new JLabel("")); 
+        panel.add(signUpButton);
+
+        add(panel);
+        setTitle("SIGN UP");
+        setSize(400, 200);
+        revalidate();
+        repaint();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new LibraryManagementSystem().setVisible(true);
+            }
+        });
+    }
+}
