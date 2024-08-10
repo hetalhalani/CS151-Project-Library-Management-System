@@ -2,3 +2,5 @@ ReadMe File
 
 Copy Paste the codes of LibraryManagementSystems and User in your eclipse workspace!
 Run the files to open the Library Management Systems GUI!
+
+This Project is a Library Management Systems Project which is a replica of what a library page would look like. It has a login page, sign up page, books checkout page, and an admins page to see the active and inactive users.
